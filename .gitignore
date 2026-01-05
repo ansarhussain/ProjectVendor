@@ -1,0 +1,9 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/VendorProject/obj
+/.vs
+/VendorProject/.vs/VendorProject
+/VendorProject/bin/Debug/net8.0
+/VendorProject/VendorProject.csproj.user

@@ -1,83 +1,9 @@
-// =======================================================
-// EF Core 8 - SQL Server - Code First (Complete Models)
-// Target: .NET 8, Microsoft.EntityFrameworkCore.SqlServer
-// Notes:
-// - Uses GUID PKs
-// - Uses Fluent API for keys/indexes/relationships/precision
-// - Enums stored as strings (nvarchar) for readability
-// =======================================================
-
-using System;
-using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using VendorProject.EF.Models;
 
-namespace Marketplace.Data
+namespace VendorProject.EF.Data
 {
-    // -------------------------
-    // DbContext
-    // -------------------------
-    public class MarketplaceDbContext : DbContext
-    {
-        public MarketplaceDbContext(DbContextOptions<MarketplaceDbContext> options) : base(options) { }
-
-        public DbSet<User> Users => Set<User>();
-        public DbSet<UserRole> UserRoles => Set<UserRole>();
-        public DbSet<UserKyc> UserKycs => Set<UserKyc>();
-
-        public DbSet<Address> Addresses => Set<Address>();
-        public DbSet<UserAddress> UserAddresses => Set<UserAddress>();
-        public DbSet<UserContact> UserContacts => Set<UserContact>();
-
-        public DbSet<Product> Products => Set<Product>();
-        public DbSet<VendorListing> VendorListings => Set<VendorListing>();
-
-        public DbSet<Order> Orders => Set<Order>();
-        public DbSet<OrderItem> OrderItems => Set<OrderItem>();
-        public DbSet<Payment> Payments => Set<Payment>();
-
-        public DbSet<Vehicle> Vehicles => Set<Vehicle>();
-        public DbSet<TransportRoute> TransportRoutes => Set<TransportRoute>();
-
-        public DbSet<Shipment> Shipments => Set<Shipment>();
-        public DbSet<ShipmentContact> ShipmentContacts => Set<ShipmentContact>();
-
-        public DbSet<ContactUnlock> ContactUnlocks => Set<ContactUnlock>();
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
-
-            modelBuilder.ApplyConfiguration(new UserConfig());
-            modelBuilder.ApplyConfiguration(new UserRoleConfig());
-            modelBuilder.ApplyConfiguration(new UserKycConfig());
-
-            modelBuilder.ApplyConfiguration(new AddressConfig());
-            modelBuilder.ApplyConfiguration(new UserAddressConfig());
-            modelBuilder.ApplyConfiguration(new UserContactConfig());
-
-            modelBuilder.ApplyConfiguration(new ProductConfig());
-            modelBuilder.ApplyConfiguration(new VendorListingConfig());
-
-            modelBuilder.ApplyConfiguration(new OrderConfig());
-            modelBuilder.ApplyConfiguration(new OrderItemConfig());
-            modelBuilder.ApplyConfiguration(new PaymentConfig());
-
-            modelBuilder.ApplyConfiguration(new VehicleConfig());
-            modelBuilder.ApplyConfiguration(new TransportRouteConfig());
-
-            modelBuilder.ApplyConfiguration(new ShipmentConfig());
-            modelBuilder.ApplyConfiguration(new ShipmentContactConfig());
-
-            modelBuilder.ApplyConfiguration(new ContactUnlockConfig());
-        }
-    }
-
-    // -------------------------
-    // Fluent Configurations
-    // -------------------------
-
     internal static class SqlDefaults
     {
         public const string NowUtc = "SYSUTCDATETIME()";
@@ -209,7 +135,7 @@ namespace Marketplace.Data
             b.Property(x => x.CreatedAt).HasDefaultValueSql(SqlDefaults.NowUtc);
 
             b.HasIndex(x => x.UserId);
-            b.HasIndex(x => new { x.UserId, x.Phone }).IsUnique(); // avoid duplicates per user
+            b.HasIndex(x => new { x.UserId, x.Phone }).IsUnique();
         }
     }
 
@@ -363,7 +289,6 @@ namespace Marketplace.Data
             b.Property(x => x.FromCity).HasMaxLength(100);
             b.Property(x => x.ToCity).HasMaxLength(100);
 
-            // DateOnly mapping to SQL Server date
             b.Property(x => x.DepartDate).HasColumnType("date");
 
             b.Property(x => x.CapacityWeightAvailable).HasPrecision(18, 3);

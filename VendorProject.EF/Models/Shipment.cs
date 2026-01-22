@@ -16,8 +16,8 @@ namespace VendorProject.EF.Models
         public decimal? FinalPrice { get; set; }  // decimal(18,2)
         public string Currency { get; set; } = "INR";
 
-        public Guid PickupAddressId { get; set; }
-        public Guid DropAddressId { get; set; }
+        public Guid? PickupAddressId { get; set; }
+        public Guid? DropAddressId { get; set; }
 
         public DateTime? PickupTime { get; set; }
         public DateTime? DeliveredTime { get; set; }
@@ -29,8 +29,8 @@ namespace VendorProject.EF.Models
         public TransportRoute? TransportRoute { get; set; }
         public Vehicle? Vehicle { get; set; }
 
-        public Address PickupAddress { get; set; } = null!;
-        public Address DropAddress { get; set; } = null!;
+        public Address? PickupAddress { get; set; }
+        public Address? DropAddress { get; set; }
 
         public ICollection<ShipmentContact> ShipmentContacts { get; set; } = new List<ShipmentContact>();
     }

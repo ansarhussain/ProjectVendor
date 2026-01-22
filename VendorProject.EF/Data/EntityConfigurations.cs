@@ -305,7 +305,7 @@ namespace VendorProject.EF.Data
             b.HasOne(x => x.Vehicle).WithMany(x => x.Routes).HasForeignKey(x => x.VehicleId).OnDelete(DeleteBehavior.SetNull);
 
             b.HasOne(x => x.FromAddress).WithMany(x => x.RoutesFrom).HasForeignKey(x => x.FromAddressId).OnDelete(DeleteBehavior.SetNull);
-            b.HasOne(x => x.ToAddress).WithMany(x => x.RoutesTo).HasForeignKey(x => x.ToAddressId).OnDelete(DeleteBehavior.SetNull);
+            b.HasOne(x => x.ToAddress).WithMany(x => x.RoutesTo).HasForeignKey(x => x.ToAddressId).OnDelete(DeleteBehavior.Restrict);
 
             b.HasIndex(x => x.TransporterUserId);
             b.HasIndex(x => new { x.IsActive, x.DepartDate });

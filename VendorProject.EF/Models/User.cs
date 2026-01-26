@@ -11,13 +11,27 @@ namespace VendorProject.EF.Models
         public string? PasswordHash { get; set; } // if not using external auth/Identity
         public bool IsActive { get; set; } = true;
 
+        // OTP & Authentication
+        public bool IsPhoneVerified { get; set; } = false;
+        public DateTime? PhoneVerifiedAt { get; set; }
+        
+        public bool IsKycVerified { get; set; } = false;
+        public DateTime? KycVerifiedAt { get; set; }
+
+        // Audit
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public DateTime? LastLoginAt { get; set; }
 
+        // Navigation
         public ICollection<UserRole> Roles { get; set; } = new List<UserRole>();
         public ICollection<UserAddress> Addresses { get; set; } = new List<UserAddress>();
         public ICollection<UserContact> Contacts { get; set; } = new List<UserContact>();
         public ICollection<UserKyc> Kycs { get; set; } = new List<UserKyc>();
+        
+        public ICollection<UserOtp> Otps { get; set; } = new List<UserOtp>();
+        public ICollection<UserDevice> Devices { get; set; } = new List<UserDevice>();
+        public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
 
         public ICollection<VendorListing> VendorListings { get; set; } = new List<VendorListing>();
         public ICollection<Order> BuyerOrders { get; set; } = new List<Order>();

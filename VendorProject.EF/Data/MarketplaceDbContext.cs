@@ -20,6 +20,9 @@ namespace VendorProject.EF.Data
         public DbSet<User> Users => Set<User>();
         public DbSet<UserRole> UserRoles => Set<UserRole>();
         public DbSet<UserKyc> UserKycs => Set<UserKyc>();
+        public DbSet<UserOtp> UserOtps => Set<UserOtp>();
+        public DbSet<UserDevice> UserDevices => Set<UserDevice>();
+        public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
 
         // Addresses
         public DbSet<Address> Addresses => Set<Address>();
@@ -54,6 +57,9 @@ namespace VendorProject.EF.Data
             modelBuilder.ApplyConfiguration(new UserConfig());
             modelBuilder.ApplyConfiguration(new UserRoleConfig());
             modelBuilder.ApplyConfiguration(new UserKycConfig());
+            modelBuilder.ApplyConfiguration(new UserOtpConfig());
+            modelBuilder.ApplyConfiguration(new UserDeviceConfig());
+            modelBuilder.ApplyConfiguration(new RefreshTokenConfig());
 
             modelBuilder.ApplyConfiguration(new AddressConfig());
             modelBuilder.ApplyConfiguration(new UserAddressConfig());

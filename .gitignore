@@ -10,3 +10,7 @@
 /VendorProject/.vs/ProjectEvaluation
 /VendorProject.EF/obj
 /VendorProject.EF/bin
+/VendorProject.Services/bin/Debug/net8.0
+/VendorProject.Services/obj
+/VendorProject.Common/obj
+/VendorProject.Common/bin/Debug/net8.0

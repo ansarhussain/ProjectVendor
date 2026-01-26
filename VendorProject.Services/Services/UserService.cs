@@ -21,6 +21,20 @@ namespace VendorProject.Services.Services
             return _mapper.Map<IEnumerable<UserDto>>(users);
         }
 
+        public async Task<PaginatedResponse<UserDto>> GetAllPaginatedAsync(PaginationQuery query, CancellationToken cancellationToken = default)
+        {
+            var (users, totalCount) = await _repository.GetAllPaginatedAsync(query, cancellationToken);
+            var userDtos = _mapper.Map<IEnumerable<UserDto>>(users);
+
+            return new PaginatedResponse<UserDto>
+            {
+                Data = userDtos,
+                Page = query.Page,
+                PageSize = query.PageSize,
+                TotalCount = totalCount
+            };
+        }
+
         public async Task<UserDto?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             var user = await _repository.GetByIdAsync(id, cancellationToken);

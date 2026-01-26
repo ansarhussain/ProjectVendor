@@ -19,17 +19,31 @@ namespace VendorProject.Controllers
         }
 
         /// <summary>
-        /// Gets all users
+        /// Gets all users with pagination and search
         /// </summary>
+        /// <param name="page">Page number (default: 1)</param>
+        /// <param name="pageSize">Number of items per page (default: 10, max: 100)</param>
+        /// <param name="searchName">Search term to filter by full name</param>
         /// <param name="cancellationToken">Cancellation token</param>
-        /// <returns>List of users</returns>
-        /// <response code="200">Returns the list of users</response>
+        /// <returns>Paginated list of users</returns>
+        /// <response code="200">Returns the paginated list of users</response>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<UserDto>>> GetUsers(CancellationToken cancellationToken)
+        public async Task<ActionResult<PaginatedResponse<UserDto>>> GetUsers(
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10,
+            [FromQuery] string? searchName = null,
+            CancellationToken cancellationToken = default)
         {
-            var users = await _userService.GetAllAsync(cancellationToken);
-            return Ok(users);
+            var query = new PaginationQuery
+            {
+                Page = page,
+                PageSize = pageSize,
+                SearchName = searchName
+            };
+
+            var result = await _userService.GetAllPaginatedAsync(query, cancellationToken);
+            return Ok(result);
         }
 
         /// <summary>

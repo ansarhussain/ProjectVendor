@@ -19,17 +19,31 @@ namespace VendorProject.Controllers
         }
 
         /// <summary>
-        /// Gets all transport routes
+        /// Gets all transport routes with pagination and search
         /// </summary>
+        /// <param name="page">Page number (default: 1)</param>
+        /// <param name="pageSize">Number of items per page (default: 10, max: 100)</param>
+        /// <param name="searchName">Search term to filter by from city or to city</param>
         /// <param name="cancellationToken">Cancellation token</param>
-        /// <returns>List of transport routes</returns>
-        /// <response code="200">Returns the list of transport routes</response>
+        /// <returns>Paginated list of transport routes</returns>
+        /// <response code="200">Returns the paginated list of transport routes</response>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<TransportRouteDto>>> GetTransports(CancellationToken cancellationToken)
+        public async Task<ActionResult<PaginatedResponse<TransportRouteDto>>> GetTransports(
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10,
+            [FromQuery] string? searchName = null,
+            CancellationToken cancellationToken = default)
         {
-            var transportRoutes = await _transportRouteService.GetAllAsync(cancellationToken);
-            return Ok(transportRoutes);
+            var query = new PaginationQuery
+            {
+                Page = page,
+                PageSize = pageSize,
+                SearchName = searchName
+            };
+
+            var result = await _transportRouteService.GetAllPaginatedAsync(query, cancellationToken);
+            return Ok(result);
         }
     }
 }

@@ -20,5 +20,19 @@ namespace VendorProject.Services.Services
             var transportRoutes = await _repository.GetAllAsync(cancellationToken);
             return _mapper.Map<IEnumerable<TransportRouteDto>>(transportRoutes);
         }
+
+        public async Task<PaginatedResponse<TransportRouteDto>> GetAllPaginatedAsync(PaginationQuery query, CancellationToken cancellationToken = default)
+        {
+            var (transportRoutes, totalCount) = await _repository.GetAllPaginatedAsync(query, cancellationToken);
+            var transportRouteDtos = _mapper.Map<IEnumerable<TransportRouteDto>>(transportRoutes);
+
+            return new PaginatedResponse<TransportRouteDto>
+            {
+                Data = transportRouteDtos,
+                Page = query.Page,
+                PageSize = query.PageSize,
+                TotalCount = totalCount
+            };
+        }
     }
 }

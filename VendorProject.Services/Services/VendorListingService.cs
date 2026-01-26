@@ -21,6 +21,20 @@ namespace VendorProject.Services.Services
             return _mapper.Map<IEnumerable<VendorListingDto>>(vendorListings);
         }
 
+        public async Task<PaginatedResponse<VendorListingDto>> GetByProductIdPaginatedAsync(Guid productId, PaginationQuery query, CancellationToken cancellationToken = default)
+        {
+            var (vendorListings, totalCount) = await _repository.GetByProductIdPaginatedAsync(productId, query, cancellationToken);
+            var vendorListingDtos = _mapper.Map<IEnumerable<VendorListingDto>>(vendorListings);
+
+            return new PaginatedResponse<VendorListingDto>
+            {
+                Data = vendorListingDtos,
+                Page = query.Page,
+                PageSize = query.PageSize,
+                TotalCount = totalCount
+            };
+        }
+
         public async Task<VendorListingDto?> GetByProductIdAndVendorListingIdAsync(Guid productId, Guid vendorListingId, CancellationToken cancellationToken = default)
         {
             var vendorListing = await _repository.GetByProductIdAndVendorListingIdAsync(productId, vendorListingId, cancellationToken);

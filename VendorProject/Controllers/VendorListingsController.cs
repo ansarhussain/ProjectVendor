@@ -19,20 +19,33 @@ namespace VendorProject.Controllers
         }
 
         /// <summary>
-        /// Gets all vendor listings for a specific product
+        /// Gets all vendor listings for a specific product with pagination and search
         /// </summary>
         /// <param name="productId">The product ID</param>
+        /// <param name="page">Page number (default: 1)</param>
+        /// <param name="pageSize">Number of items per page (default: 10, max: 100)</param>
+        /// <param name="searchName">Search term to filter by product name</param>
         /// <param name="cancellationToken">Cancellation token</param>
-        /// <returns>List of vendor listings for the product</returns>
-        /// <response code="200">Returns the list of vendor listings</response>
+        /// <returns>Paginated list of vendor listings for the product</returns>
+        /// <response code="200">Returns the paginated list of vendor listings</response>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<IEnumerable<VendorListingDto>>> GetVendorListingsByProductId(
+        public async Task<ActionResult<PaginatedResponse<VendorListingDto>>> GetVendorListingsByProductId(
             Guid productId,
-            CancellationToken cancellationToken)
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10,
+            [FromQuery] string? searchName = null,
+            CancellationToken cancellationToken = default)
         {
-            var vendorListings = await _vendorListingService.GetByProductIdAsync(productId, cancellationToken);
-            return Ok(vendorListings);
+            var query = new PaginationQuery
+            {
+                Page = page,
+                PageSize = pageSize,
+                SearchName = searchName
+            };
+
+            var result = await _vendorListingService.GetByProductIdPaginatedAsync(productId, query, cancellationToken);
+            return Ok(result);
         }
 
         /// <summary>

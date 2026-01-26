@@ -381,4 +381,75 @@ namespace VendorProject.EF.Data
             b.HasIndex(x => new { x.BuyerUserId, x.TargetUserId, x.ExpiresAt });
         }
     }
+
+    public class UserOtpConfig : IEntityTypeConfiguration<UserOtp>
+    {
+        public void Configure(EntityTypeBuilder<UserOtp> b)
+        {
+            b.ToTable("user_otps");
+            b.HasKey(x => x.Id);
+
+            b.Property(x => x.PhoneNumber).HasMaxLength(20).IsRequired();
+            b.Property(x => x.OtpCode).HasMaxLength(10).IsRequired();
+            b.Property(x => x.Provider).HasConversion<string>().HasMaxLength(30).IsRequired();
+            b.Property(x => x.Purpose).HasConversion<string>().HasMaxLength(30).IsRequired();
+            b.Property(x => x.IsVerified).HasDefaultValue(false);
+            b.Property(x => x.AttemptCount).HasDefaultValue(0);
+            b.Property(x => x.MaxAttempts).HasDefaultValue(3);
+            
+            b.Property(x => x.CreatedAt).HasDefaultValueSql(SqlDefaults.NowUtc);
+
+            b.HasOne(x => x.User).WithMany(x => x.Otps).HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Cascade);
+
+            // Indexes for OTP lookup and cleanup
+            b.HasIndex(x => new { x.PhoneNumber, x.ExpiresAt });
+            b.HasIndex(x => new { x.UserId, x.Purpose, x.IsVerified });
+            b.HasIndex(x => x.ExpiresAt); // For cleanup queries
+        }
+    }
+
+    public class UserDeviceConfig : IEntityTypeConfiguration<UserDevice>
+    {
+        public void Configure(EntityTypeBuilder<UserDevice> b)
+        {
+            b.ToTable("user_devices");
+            b.HasKey(x => x.Id);
+
+            b.Property(x => x.DeviceName).HasMaxLength(100).IsRequired();
+            b.Property(x => x.DeviceId).HasMaxLength(255).IsRequired();
+            b.Property(x => x.DeviceType).HasMaxLength(50).IsRequired();
+            b.Property(x => x.IpAddress).HasMaxLength(45); // IPv6 max length
+            b.Property(x => x.UserAgent).HasMaxLength(500);
+            
+            b.Property(x => x.IsVerified).HasDefaultValue(false);
+            b.Property(x => x.IsActive).HasDefaultValue(true);
+            b.Property(x => x.CreatedAt).HasDefaultValueSql(SqlDefaults.NowUtc);
+
+            b.HasOne(x => x.User).WithMany(x => x.Devices).HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Cascade);
+
+            b.HasIndex(x => new { x.UserId, x.IsActive });
+            b.HasIndex(x => new { x.DeviceId, x.UserId }).IsUnique();
+        }
+    }
+
+    public class RefreshTokenConfig : IEntityTypeConfiguration<RefreshToken>
+    {
+        public void Configure(EntityTypeBuilder<RefreshToken> b)
+        {
+            b.ToTable("refresh_tokens");
+            b.HasKey(x => x.Id);
+
+            b.Property(x => x.Token).HasMaxLength(500).IsRequired();
+            b.Property(x => x.JwtTokenId).HasMaxLength(100).IsRequired();
+            b.Property(x => x.CreatedAt).HasDefaultValueSql(SqlDefaults.NowUtc);
+
+            b.HasOne(x => x.User).WithMany(x => x.RefreshTokens).HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Cascade);
+
+            // Indexes for token lookups and cleanup
+            b.HasIndex(x => x.Token).IsUnique();
+            b.HasIndex(x => x.JwtTokenId).IsUnique();
+            b.HasIndex(x => new { x.UserId, x.ExpiresAt });
+            b.HasIndex(x => x.ExpiresAt); // For cleanup queries
+        }
+    }
 }

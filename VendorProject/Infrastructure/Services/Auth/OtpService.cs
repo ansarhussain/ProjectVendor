@@ -90,6 +90,44 @@ namespace VendorProject.Infrastructure.Services.Auth
                     return (false, "Too many OTP requests. Please try after 1 minute.", null);
                 }
 
+                // Ensure a User exists for this phone number so FK constraint won't fail.
+                // If a userId was provided use it, otherwise try to find existing user by phone
+                // or create a new user record (registration-as-part-of-OTP flow).
+                Guid effectiveUserId;
+                if (userId.HasValue && userId.Value != Guid.Empty)
+                {
+                    effectiveUserId = userId.Value;
+                }
+                else
+                {
+                    var existingUser = await _dbContext.Users
+                        .Where(u => u.Phone == phoneNumber)
+                        .FirstOrDefaultAsync(cancellationToken);
+
+                    if (existingUser == null)
+                    {
+                        var newUser = new VendorProject.EF.Models.User
+                        {
+                            Id = Guid.NewGuid(),
+                            Phone = phoneNumber,
+                            FullName = string.Empty,
+                            IsActive = true,
+                            IsPhoneVerified = false,
+                            CreatedAt = DateTime.UtcNow,
+                            UpdatedAt = DateTime.UtcNow
+                        };
+
+                        _dbContext.Users.Add(newUser);
+                        await _dbContext.SaveChangesAsync(cancellationToken);
+
+                        effectiveUserId = newUser.Id;
+                    }
+                    else
+                    {
+                        effectiveUserId = existingUser.Id;
+                    }
+                }
+
                 // Invalidate previous unverified OTPs for this phone/purpose
                 var previousOtps = await _dbContext.UserOtps
                     .Where(o => o.PhoneNumber == phoneNumber && 
@@ -106,7 +144,7 @@ namespace VendorProject.Infrastructure.Services.Auth
                 var userOtp = new UserOtp
                 {
                     Id = Guid.NewGuid(),
-                    UserId = userId ?? Guid.Empty,
+                    UserId = effectiveUserId,
                     PhoneNumber = phoneNumber,
                     OtpCode = otpCode,
                     Purpose = purpose,
